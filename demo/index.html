@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OKX-ASP | Agentic Sentiment Intelligence</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--accent:#58a6ff;--green:#3fb950;--red:#f85149;--yellow:#d29922;--text:#c9d1d9;--dim:#8b949e}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.header{background:linear-gradient(135deg,#0d1117 0%,#161b22 100%);border-bottom:1px solid var(--border);padding:20px 40px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:12px}
+.logo svg{width:32px;height:32px}
+.logo h1{font-size:22px;color:#fff}
+.logo span{color:var(--accent);font-size:12px;background:rgba(88,166,255,.1);padding:2px 8px;border-radius:12px}
+.chain-badge{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--green);background:rgba(63,185,80,.1);padding:6px 12px;border-radius:8px}
+.chain-badge::before{content:'';width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.container{max-width:1200px;margin:0 auto;padding:24px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+.card h2{font-size:14px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card h2 .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.card h2 .dot.green{background:var(--green)}
+.card h2 .dot.blue{background:var(--accent)}
+.card h2 .dot.yellow{background:var(--yellow)}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;color:var(--dim);margin-bottom:6px}
+select,input{width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;outline:none}
+select:focus,input:focus{border-color:var(--accent)}
+.btn{width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn:hover{opacity:.9;transform:translateY(-1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn.outline{background:transparent;border:1px solid var(--border);color:var(--dim)}
+.agent-status{display:flex;flex-direction:column;gap:10px}
+.agent-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:8px;font-size:13px}
+.agent-row .name{font-weight:600;color:#fff}
+.agent-row .port{color:var(--dim);font-family:monospace}
+.agent-row .badge{padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.badge.ok{background:rgba(63,185,80,.15);color:var(--green)}
+.badge.busy{background:rgba(210,153,34,.15);color:var(--yellow)}
+.result-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;min-height:100px;font-size:13px;line-height:1.6;white-space:pre-wrap;font-family:monospace;max-height:400px;overflow-y:auto}
+.sentiment-bar{height:8px;border-radius:4px;background:var(--border);margin:8px 0;overflow:hidden}
+.sentiment-bar .fill{height:100%;border-radius:4px;transition:width .5s}
+.coin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-top:12px}
+.coin-chip{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;font-size:12px}
+.coin-chip .symbol{font-weight:700;font-size:16px;color:#fff}
+.coin-chip .score{margin-top:4px}
+.score.positive{color:var(--green)}
+.score.negative{color:var(--red)}
+.score.neutral{color:var(--dim)}
+.alert-list{list-style:none;max-height:200px;overflow-y:auto}
+.alert-list li{padding:8px 12px;background:var(--bg);border-radius:6px;margin-bottom:6px;font-size:12px;border-left:3px solid var(--yellow)}
+.tx-table{width:100%;font-size:12px;border-collapse:collapse}
+.tx-table th{text-align:left;padding:8px;color:var(--dim);border-bottom:1px solid var(--border)}
+.tx-table td{padding:8px;border-bottom:1px solid rgba(48,54,61,.5);font-family:monospace}
+.full-width{grid-column:1/-1}
+.loader{display:inline-block;width:16px;height:16px;border:2px solid var(--dim);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.price-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+.price-card.popular{border-color:var(--accent);position:relative}
+.price-card.popular::after{content:'POPULAR';position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:9px;padding:2px 8px;border-radius:8px;font-weight:700}
+.price-card h3{font-size:14px;color:#fff;margin-bottom:4px}
+.price-card .price{font-size:24px;font-weight:700;color:var(--accent)}
+.price-card .price small{font-size:11px;color:var(--dim)}
+.price-card ul{list-style:none;text-align:left;font-size:11px;color:var(--dim);margin-top:10px}
+.price-card ul li::before{content:'✓ ';color:var(--green)}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="#58a6ff" stroke-width="2"/><circle cx="16" cy="16" r="6" fill="#58a6ff"/><line x1="16" y1="2" x2="16" y2="10" stroke="#58a6ff" stroke-width="2"/><line x1="16" y1="22" x2="16" y2="30" stroke="#58a6ff" stroke-width="2"/><line x1="2" y1="16" x2="10" y2="16" stroke="#58a6ff" stroke-width="2"/><line x1="22" y1="16" x2="30" y2="16" stroke="#58a6ff" stroke-width="2"/></svg>
+    <div><h1>OKX-ASP</h1><span>Agentic Sentiment Intelligence on X-Layer</span></div>
+  </div>
+  <div class="chain-badge">X-Layer L2 ● Chain ID 196</div>
+</div>
+
+<div class="container">
+  <!-- Pricing -->
+  <div class="pricing">
+    <div class="price-card"><h3>Free</h3><div class="price">0<small> ETH</small></div><ul><li>Daily sentiment summary</li><li>5 coins tracked</li><li>Basic risk alerts</li></ul></div>
+    <div class="price-card popular"><h3>Basic</h3><div class="price">0.005<small> ETH/mo</small></div><ul><li>Deep market reports</li><li>10 coins + whale tracking</li><li>Risk & anomaly alerts</li></ul></div>
+    <div class="price-card"><h3>Premium</h3><div class="price">0.02<small> ETH/mo</small></div><ul><li>Unlimited reports</li><li>Fund flow analysis</li><li>Priority A2A routing</li></ul></div>
+  </div>
+
+  <div class="grid">
+    <!-- Order Panel -->
+    <div class="card">
+      <h2><span class="dot blue"></span>Submit Analysis Request</h2>
+      <div class="form-group">
+        <label>Plan</label>
+        <select id="tier"><option value="free">Free — Daily Summary</option><option value="basic" selected>Basic — Deep Report</option><option value="premium">Premium — Full Analysis</option></select>
+      </div>
+      <div class="form-group">
+        <label>Coins (comma-separated)</label>
+        <input id="query" type="text" value="BTC,ETH,SOL" placeholder="BTC,ETH,SOL,XRP">
+      </div>
+      <div class="form-group">
+        <label>Wallet Address (demo)</label>
+        <input id="wallet" type="text" value="0xDemoUser" placeholder="0x...">
+      </div>
+      <button class="btn" id="submitBtn" onclick="submitOrder()">🚀 Submit Order</button>
+    </div>
+
+    <!-- Agent Status -->
+    <div class="card">
+      <h2><span class="dot green"></span>Agent Cluster Status</h2>
+      <div class="agent-status" id="agentStatus">
+        <div class="agent-row"><div><span class="name">Dispatcher</span> <span class="port">:8001</span></div><span class="badge ok" id="s-dispatcher">● Online</span></div>
+        <div class="agent-row"><div><span class="name">Collector</span> <span class="port">:8002</span></div><span class="badge ok" id="s-collector">● Online</span></div>
+        <div class="agent-row"><div><span class="name">Analyst</span> <span class="port">:8003</span></div><span class="badge ok" id="s-analyst">● Online</span></div>
+        <div class="agent-row"><div><span class="name">Settlement</span> <span class="port">:8004</span></div><span class="badge ok" id="s-settlement">● Online</span></div>
+      </div>
+      <div style="margin-top:12px">
+        <button class="btn outline" onclick="checkHealth()">Refresh Status</button>
+      </div>
+    </div>
+
+    <!-- Sentiment Result -->
+    <div class="card">
+      <h2><span class="dot yellow"></span>Market Sentiment</h2>
+      <div id="sentimentArea">
+        <p style="color:var(--dim);font-size:13px">Submit an order to see live sentiment analysis...</p>
+      </div>
+    </div>
+
+    <!-- Risk Alerts -->
+    <div class="card">
+      <h2><span class="dot yellow"></span>Risk Alerts</h2>
+      <ul class="alert-list" id="alertList">
+        <li style="color:var(--dim)">No alerts yet</li>
+      </ul>
+    </div>
+
+    <!-- Market Brief -->
+    <div class="card full-width">
+      <h2><span class="dot blue"></span>📊 Market Brief (AI-Generated)</h2>
+      <div class="result-box" id="briefBox">Waiting for order...</div>
+    </div>
+
+    <!-- Settlement Ledger -->
+    <div class="card full-width">
+      <h2><span class="dot green"></span>⛓️ A2A Settlement Ledger (X402)</h2>
+      <div id="ledgerArea">
+        <table class="tx-table">
+          <thead><tr><th>Block</th><th>Type</th><th>From</th><th>To</th><th>Amount (ETH)</th><th>Task ID</th></tr></thead>
+          <tbody id="ledgerBody"><tr><td colspan="6" style="color:var(--dim)">No transactions yet</td></tr></tbody>
+        </table>
+      </div>
+      <button class="btn outline" style="margin-top:12px" onclick="refreshLedger()">Refresh Ledger</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '';
+
+async function submitOrder() {
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loader"></span> Processing...';
+
+  // Mark agents busy
+  ['collector','analyst','settlement'].forEach(a => {
+    const el = document.getElementById('s-'+a);
+    el.className = 'badge busy';
+    el.textContent = '● Processing';
+  });
+
+  try {
+    const res = await fetch(API + '/api/order', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        user_address: document.getElementById('wallet').value,
+        tier: document.getElementById('tier').value,
+        query: document.getElementById('query').value,
+      })
+    });
+    const data = await res.json();
+    displayResult(data);
+    refreshLedger();
+  } catch (e) {
+    document.getElementById('briefBox').textContent = 'Error: ' + e.message;
+  }
+
+  btn.disabled = false;
+  btn.textContent = '🚀 Submit Order';
+  ['collector','analyst','settlement'].forEach(a => {
+    const el = document.getElementById('s-'+a);
+    el.className = 'badge ok';
+    el.textContent = '● Online';
+  });
+}
+
+function displayResult(data) {
+  const brief = data.brief;
+  const analysis = data.analysis;
+
+  // Sentiment
+  const idx = analysis.sentiment_index;
+  const pct = Math.round((idx + 1) / 2 * 100);
+  const color = idx > 0.15 ? 'var(--green)' : idx < -0.15 ? 'var(--red)' : 'var(--yellow)';
+  let html = `<div style="text-align:center;font-size:28px;font-weight:700;color:${color}">${idx.toFixed(3)}</div>`;
+  html += `<div style="text-align:center;font-size:12px;color:var(--dim);margin-bottom:8px">Market Sentiment Index</div>`;
+  html += `<div class="sentiment-bar"><div class="fill" style="width:${pct}%;background:${color}"></div></div>`;
+
+  // Coin chips
+  html += '<div class="coin-grid">';
+  analysis.coin_sentiments.forEach(c => {
+    const cls = c.sentiment_score > 0.1 ? 'positive' : c.sentiment_score < -0.1 ? 'negative' : 'neutral';
+    html += `<div class="coin-chip"><div class="symbol">${c.coin}</div><div class="score ${cls}">${c.sentiment_score > 0 ? '+' : ''}${(c.sentiment_score*100).toFixed(0)}%</div></div>`;
+  });
+  html += '</div>';
+  document.getElementById('sentimentArea').innerHTML = html;
+
+  // Alerts
+  const alerts = analysis.risk_alerts;
+  const alertEl = document.getElementById('alertList');
+  if (alerts.length) {
+    alertEl.innerHTML = alerts.map(a => `<li>${a}</li>`).join('');
+  } else {
+    alertEl.innerHTML = '<li style="color:var(--green)">✅ No risk alerts detected</li>';
+  }
+
+  // Brief
+  document.getElementById('briefBox').textContent = brief.summary;
+}
+
+async function refreshLedger() {
+  try {
+    const res = await fetch(API + '/ledger');
+    const data = await res.json();
+    const tbody = document.getElementById('ledgerBody');
+    if (!data.recent_txs.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="color:var(--dim)">No transactions</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.recent_txs.map(tx => `
+      <tr>
+        <td>${tx.block}</td>
+        <td>${tx.type}</td>
+        <td>${tx.from.slice(0,10)}...</td>
+        <td>${tx.to.slice(0,10)}...</td>
+        <td style="color:var(--green)">${tx.amount_eth}</td>
+        <td>${tx.task_id.slice(0,8)}...</td>
+      </tr>
+    `).join('');
+  } catch (e) {
+    console.error('Ledger fetch failed:', e);
+  }
+}
+
+async function checkHealth() {
+  const agents = ['dispatcher','collector','analyst','settlement'];
+  for (const a of agents) {
+    try {
+      const port = {dispatcher:8001,collector:8002,analyst:8003,settlement:8004}[a];
+      const res = await fetch(`http://localhost:${port}/health`);
+      const el = document.getElementById('s-'+a);
+      if (res.ok) { el.className='badge ok'; el.textContent='● Online'; }
+      else { el.className='badge'; el.textContent='● Error'; }
+    } catch {
+      const el = document.getElementById('s-'+a);
+      el.className='badge'; el.textContent='● Offline';
+      el.style.color='var(--red)';
+    }
+  }
+}
+
+// Auto-refresh on load
+checkHealth();
+refreshLedger();
+</script>
+</body>
+</html>
