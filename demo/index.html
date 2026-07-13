@@ -16,6 +16,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .chain-badge{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--green);background:rgba(63,185,80,.1);padding:6px 12px;border-radius:8px}
 .chain-badge::before{content:'';width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.lang-toggle{display:flex;gap:0;background:var(--bg);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.lang-toggle button{padding:6px 14px;border:none;background:transparent;color:var(--dim);font-size:12px;cursor:pointer;font-weight:600;transition:all .15s}
+.lang-toggle button.active{background:var(--accent);color:#fff}
 .container{max-width:1200px;margin:0 auto;padding:24px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
@@ -66,107 +69,163 @@ select:focus,input:focus{border-color:var(--accent)}
 .price-card .price small{font-size:11px;color:var(--dim)}
 .price-card ul{list-style:none;text-align:left;font-size:11px;color:var(--dim);margin-top:10px}
 .price-card ul li::before{content:'✓ ';color:var(--green)}
+.header-right{display:flex;align-items:center;gap:16px}
 </style>
 </head>
 <body>
 <div class="header">
   <div class="logo">
     <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="#58a6ff" stroke-width="2"/><circle cx="16" cy="16" r="6" fill="#58a6ff"/><line x1="16" y1="2" x2="16" y2="10" stroke="#58a6ff" stroke-width="2"/><line x1="16" y1="22" x2="16" y2="30" stroke="#58a6ff" stroke-width="2"/><line x1="2" y1="16" x2="10" y2="16" stroke="#58a6ff" stroke-width="2"/><line x1="22" y1="16" x2="30" y2="16" stroke="#58a6ff" stroke-width="2"/></svg>
-    <div><h1>OKX-ASP</h1><span>Agentic Sentiment Intelligence on X-Layer</span></div>
+    <div><h1>OKX-ASP</h1><span data-i18n="subtitle">Agentic Sentiment Intelligence on X-Layer</span></div>
   </div>
-  <div class="chain-badge">X-Layer L2 ● Chain ID 196</div>
+  <div class="header-right">
+    <div class="lang-toggle">
+      <button id="lang-en" class="active" onclick="setLang('en')">EN</button>
+      <button id="lang-zh" onclick="setLang('zh')">中文</button>
+    </div>
+    <div class="chain-badge">X-Layer L2 ● Chain ID 196</div>
+  </div>
 </div>
 
 <div class="container">
-  <!-- Pricing -->
   <div class="pricing">
-    <div class="price-card"><h3>Free</h3><div class="price">0<small> ETH</small></div><ul><li>Daily sentiment summary</li><li>5 coins tracked</li><li>Basic risk alerts</li></ul></div>
-    <div class="price-card popular"><h3>Basic</h3><div class="price">0.005<small> ETH/mo</small></div><ul><li>Deep market reports</li><li>10 coins + whale tracking</li><li>Risk & anomaly alerts</li></ul></div>
-    <div class="price-card"><h3>Premium</h3><div class="price">0.02<small> ETH/mo</small></div><ul><li>Unlimited reports</li><li>Fund flow analysis</li><li>Priority A2A routing</li></ul></div>
+    <div class="price-card"><h3>Free</h3><div class="price">0<small> ETH</small></div><ul data-i18n="free-list"><li>Daily sentiment summary</li><li>5 coins tracked</li><li>Basic risk alerts</li></ul></div>
+    <div class="price-card popular"><h3>Basic</h3><div class="price">0.005<small> ETH/mo</small></div><ul data-i18n="basic-list"><li>Deep market reports</li><li>10 coins + whale tracking</li><li>Risk & anomaly alerts</li></ul></div>
+    <div class="price-card"><h3>Premium</h3><div class="price">0.02<small> ETH/mo</small></div><ul data-i18n="premium-list"><li>Unlimited reports</li><li>Fund flow analysis</li><li>Priority A2A routing</li></ul></div>
   </div>
 
   <div class="grid">
-    <!-- Order Panel -->
     <div class="card">
-      <h2><span class="dot blue"></span>Submit Analysis Request</h2>
+      <h2><span class="dot blue"></span><span data-i18n="h-submit">Submit Analysis Request</span></h2>
       <div class="form-group">
-        <label>Plan</label>
-        <select id="tier"><option value="free">Free — Daily Summary</option><option value="basic" selected>Basic — Deep Report</option><option value="premium">Premium — Full Analysis</option></select>
+        <label data-i18n="label-plan">Plan</label>
+        <select id="tier"><option value="free" data-i18n="opt-free">Free — Daily Summary</option><option value="basic" selected data-i18n="opt-basic">Basic — Deep Report</option><option value="premium" data-i18n="opt-premium">Premium — Full Analysis</option></select>
       </div>
       <div class="form-group">
-        <label>Coins (comma-separated)</label>
+        <label data-i18n="label-coins">Coins (comma-separated)</label>
         <input id="query" type="text" value="BTC,ETH,SOL" placeholder="BTC,ETH,SOL,XRP">
       </div>
       <div class="form-group">
-        <label>Wallet Address (demo)</label>
+        <label data-i18n="label-wallet">Wallet Address (demo)</label>
         <input id="wallet" type="text" value="0xDemoUser" placeholder="0x...">
       </div>
-      <button class="btn" id="submitBtn" onclick="submitOrder()">🚀 Submit Order</button>
+      <button class="btn" id="submitBtn" onclick="submitOrder()"><span data-i18n="btn-submit">🚀 Submit Order</span></button>
     </div>
 
-    <!-- Agent Status -->
     <div class="card">
-      <h2><span class="dot green"></span>Agent Cluster Status</h2>
+      <h2><span class="dot green"></span><span data-i18n="h-agents">Agent Cluster Status</span></h2>
       <div class="agent-status" id="agentStatus">
-        <div class="agent-row"><div><span class="name">Dispatcher</span> <span class="port">:8001</span></div><span class="badge ok" id="s-dispatcher">● Online</span></div>
-        <div class="agent-row"><div><span class="name">Collector</span> <span class="port">:8002</span></div><span class="badge ok" id="s-collector">● Online</span></div>
-        <div class="agent-row"><div><span class="name">Analyst</span> <span class="port">:8003</span></div><span class="badge ok" id="s-analyst">● Online</span></div>
-        <div class="agent-row"><div><span class="name">Settlement</span> <span class="port">:8004</span></div><span class="badge ok" id="s-settlement">● Online</span></div>
+        <div class="agent-row"><div><span class="name">Dispatcher</span> <span class="port">:8001</span></div><span class="badge ok" id="s-dispatcher" data-i18n="badge-online">● Online</span></div>
+        <div class="agent-row"><div><span class="name">Collector</span> <span class="port">:8002</span></div><span class="badge ok" id="s-collector" data-i18n="badge-online">● Online</span></div>
+        <div class="agent-row"><div><span class="name">Analyst</span> <span class="port">:8003</span></div><span class="badge ok" id="s-analyst" data-i18n="badge-online">● Online</span></div>
+        <div class="agent-row"><div><span class="name">Settlement</span> <span class="port">:8004</span></div><span class="badge ok" id="s-settlement" data-i18n="badge-online">● Online</span></div>
       </div>
-      <div style="margin-top:12px">
-        <button class="btn outline" onclick="checkHealth()">Refresh Status</button>
-      </div>
+      <div style="margin-top:12px"><button class="btn outline" onclick="checkHealth()" data-i18n="btn-refresh">Refresh Status</button></div>
     </div>
 
-    <!-- Sentiment Result -->
     <div class="card">
-      <h2><span class="dot yellow"></span>Market Sentiment</h2>
-      <div id="sentimentArea">
-        <p style="color:var(--dim);font-size:13px">Submit an order to see live sentiment analysis...</p>
-      </div>
+      <h2><span class="dot yellow"></span><span data-i18n="h-sentiment">Market Sentiment</span></h2>
+      <div id="sentimentArea"><p style="color:var(--dim);font-size:13px" data-i18n="sentiment-placeholder">Submit an order to see live sentiment analysis...</p></div>
     </div>
 
-    <!-- Risk Alerts -->
     <div class="card">
-      <h2><span class="dot yellow"></span>Risk Alerts</h2>
-      <ul class="alert-list" id="alertList">
-        <li style="color:var(--dim)">No alerts yet</li>
-      </ul>
+      <h2><span class="dot yellow"></span><span data-i18n="h-alerts">Risk Alerts</span></h2>
+      <ul class="alert-list" id="alertList"><li style="color:var(--dim)" data-i18n="no-alerts">No alerts yet</li></ul>
     </div>
 
-    <!-- Market Brief -->
     <div class="card full-width">
-      <h2><span class="dot blue"></span>📊 Market Brief (AI-Generated)</h2>
-      <div class="result-box" id="briefBox">Waiting for order...</div>
+      <h2><span class="dot blue"></span><span data-i18n="h-brief">📊 Market Brief (AI-Generated)</span></h2>
+      <div class="result-box" id="briefBox" data-i18n="brief-placeholder">Waiting for order...</div>
     </div>
 
-    <!-- Settlement Ledger -->
     <div class="card full-width">
-      <h2><span class="dot green"></span>⛓️ A2A Settlement Ledger (X402)</h2>
+      <h2><span class="dot green"></span><span data-i18n="h-ledger">⛓️ A2A Settlement Ledger (X402)</span></h2>
       <div id="ledgerArea">
         <table class="tx-table">
-          <thead><tr><th>Block</th><th>Type</th><th>From</th><th>To</th><th>Amount (ETH)</th><th>Task ID</th></tr></thead>
-          <tbody id="ledgerBody"><tr><td colspan="6" style="color:var(--dim)">No transactions yet</td></tr></tbody>
+          <thead><tr><th data-i18n="th-block">Block</th><th data-i18n="th-type">Type</th><th data-i18n="th-from">From</th><th data-i18n="th-to">To</th><th data-i18n="th-amount">Amount (ETH)</th><th data-i18n="th-task">Task ID</th></tr></thead>
+          <tbody id="ledgerBody"><tr><td colspan="6" style="color:var(--dim)" data-i18n="no-tx">No transactions yet</td></tr></tbody>
         </table>
       </div>
-      <button class="btn outline" style="margin-top:12px" onclick="refreshLedger()">Refresh Ledger</button>
+      <button class="btn outline" style="margin-top:12px" onclick="refreshLedger()" data-i18n="btn-ledger">Refresh Ledger</button>
     </div>
   </div>
 </div>
 
 <script>
 const API = '';
+let LANG = localStorage.getItem('asp-lang') || 'en';
+
+const T = {
+  en: {
+    subtitle: "Agentic Sentiment Intelligence on X-Layer",
+    "free-list": ["Daily sentiment summary","5 coins tracked","Basic risk alerts"],
+    "basic-list": ["Deep market reports","10 coins + whale tracking","Risk & anomaly alerts"],
+    "premium-list": ["Unlimited reports","Fund flow analysis","Priority A2A routing"],
+    "h-submit": "Submit Analysis Request",
+    "label-plan": "Plan", "label-coins": "Coins (comma-separated)", "label-wallet": "Wallet Address (demo)",
+    "opt-free": "Free — Daily Summary", "opt-basic": "Basic — Deep Report", "opt-premium": "Premium — Full Analysis",
+    "btn-submit": "🚀 Submit Order", "btn-refresh": "Refresh Status", "btn-ledger": "Refresh Ledger",
+    "h-agents": "Agent Cluster Status", "badge-online": "● Online", "badge-processing": "● Processing",
+    "h-sentiment": "Market Sentiment", "sentiment-placeholder": "Submit an order to see live sentiment analysis...",
+    "h-alerts": "Risk Alerts", "no-alerts": "No alerts yet", "no-alerts-ok": "✅ No risk alerts detected",
+    "h-brief": "📊 Market Brief (AI-Generated)", "brief-placeholder": "Waiting for order...",
+    "h-ledger": "⛓️ A2A Settlement Ledger (X402)", "no-tx": "No transactions yet",
+    "th-block": "Block", "th-type": "Type", "th-from": "From", "th-to": "To",
+    "th-amount": "Amount (ETH)", "th-task": "Task ID",
+    "sentiment-index": "Market Sentiment Index", "processing": "Processing...",
+  },
+  zh: {
+    subtitle: "基于X-Layer的多智能体情绪情报系统",
+    "free-list": ["每日情绪摘要","跟踪5个币种","基础风险预警"],
+    "basic-list": ["深度市场报告","10币种+巨鲸追踪","风险与异常预警"],
+    "premium-list": ["无限报告次数","资金流向分析","优先A2A路由"],
+    "h-submit": "提交分析请求",
+    "label-plan": "套餐", "label-coins": "币种（逗号分隔）", "label-wallet": "钱包地址（演示）",
+    "opt-free": "免费版 — 每日摘要", "opt-basic": "基础版 — 深度报告", "opt-premium": "高级版 — 全面分析",
+    "btn-submit": "🚀 提交订单", "btn-refresh": "刷新状态", "btn-ledger": "刷新账本",
+    "h-agents": "智能体集群状态", "badge-online": "● 在线", "badge-processing": "● 处理中",
+    "h-sentiment": "市场情绪", "sentiment-placeholder": "提交订单以查看实时情绪分析...",
+    "h-alerts": "风险预警", "no-alerts": "暂无预警", "no-alerts-ok": "✅ 未检测到风险预警",
+    "h-brief": "📊 市场简报（AI生成）", "brief-placeholder": "等待订单...",
+    "h-ledger": "⛓️ A2A 结算账本 (X402)", "no-tx": "暂无交易记录",
+    "th-block": "区块", "th-type": "类型", "th-from": "发起方", "th-to": "接收方",
+    "th-amount": "金额 (ETH)", "th-task": "任务ID",
+    "sentiment-index": "市场情绪指数", "processing": "处理中...",
+  }
+};
+
+function t(key) { return (T[LANG] && T[LANG][key]) || T.en[key] || key; }
+
+function setLang(lang) {
+  LANG = lang;
+  localStorage.setItem('asp-lang', lang);
+  document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+  document.getElementById('lang-zh').classList.toggle('active', lang === 'zh');
+  document.documentElement.lang = lang;
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = t(key);
+    if (Array.isArray(val)) {
+      el.innerHTML = val.map(v => `<li>${v}</li>`).join('');
+    } else {
+      if (el.tagName === 'INPUT') el.placeholder = val;
+      else el.textContent = val;
+    }
+  });
+}
+
+// --- Core functions ---
 
 async function submitOrder() {
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="loader"></span> Processing...';
+  btn.innerHTML = `<span class="loader"></span> ${t('processing')}`;
 
-  // Mark agents busy
   ['collector','analyst','settlement'].forEach(a => {
     const el = document.getElementById('s-'+a);
     el.className = 'badge busy';
-    el.textContent = '● Processing';
+    el.textContent = t('badge-processing');
   });
 
   try {
@@ -177,6 +236,7 @@ async function submitOrder() {
         user_address: document.getElementById('wallet').value,
         tier: document.getElementById('tier').value,
         query: document.getElementById('query').value,
+        lang: LANG,
       })
     });
     const data = await res.json();
@@ -187,27 +247,24 @@ async function submitOrder() {
   }
 
   btn.disabled = false;
-  btn.textContent = '🚀 Submit Order';
+  btn.innerHTML = `<span data-i18n="btn-submit">${t('btn-submit')}</span>`;
   ['collector','analyst','settlement'].forEach(a => {
     const el = document.getElementById('s-'+a);
     el.className = 'badge ok';
-    el.textContent = '● Online';
+    el.textContent = t('badge-online');
   });
 }
 
 function displayResult(data) {
   const brief = data.brief;
   const analysis = data.analysis;
-
-  // Sentiment
   const idx = analysis.sentiment_index;
   const pct = Math.round((idx + 1) / 2 * 100);
   const color = idx > 0.15 ? 'var(--green)' : idx < -0.15 ? 'var(--red)' : 'var(--yellow)';
-  let html = `<div style="text-align:center;font-size:28px;font-weight:700;color:${color}">${idx.toFixed(3)}</div>`;
-  html += `<div style="text-align:center;font-size:12px;color:var(--dim);margin-bottom:8px">Market Sentiment Index</div>`;
-  html += `<div class="sentiment-bar"><div class="fill" style="width:${pct}%;background:${color}"></div></div>`;
 
-  // Coin chips
+  let html = `<div style="text-align:center;font-size:28px;font-weight:700;color:${color}">${idx.toFixed(3)}</div>`;
+  html += `<div style="text-align:center;font-size:12px;color:var(--dim);margin-bottom:8px">${t('sentiment-index')}</div>`;
+  html += `<div class="sentiment-bar"><div class="fill" style="width:${pct}%;background:${color}"></div></div>`;
   html += '<div class="coin-grid">';
   analysis.coin_sentiments.forEach(c => {
     const cls = c.sentiment_score > 0.1 ? 'positive' : c.sentiment_score < -0.1 ? 'negative' : 'neutral';
@@ -216,16 +273,12 @@ function displayResult(data) {
   html += '</div>';
   document.getElementById('sentimentArea').innerHTML = html;
 
-  // Alerts
   const alerts = analysis.risk_alerts;
   const alertEl = document.getElementById('alertList');
-  if (alerts.length) {
-    alertEl.innerHTML = alerts.map(a => `<li>${a}</li>`).join('');
-  } else {
-    alertEl.innerHTML = '<li style="color:var(--green)">✅ No risk alerts detected</li>';
-  }
+  alertEl.innerHTML = alerts.length
+    ? alerts.map(a => `<li>${a}</li>`).join('')
+    : `<li style="color:var(--green)">${t('no-alerts-ok')}</li>`;
 
-  // Brief
   document.getElementById('briefBox').textContent = brief.summary;
 }
 
@@ -235,22 +288,13 @@ async function refreshLedger() {
     const data = await res.json();
     const tbody = document.getElementById('ledgerBody');
     if (!data.recent_txs.length) {
-      tbody.innerHTML = '<tr><td colspan="6" style="color:var(--dim)">No transactions</td></tr>';
+      tbody.innerHTML = `<tr><td colspan="6" style="color:var(--dim)">${t('no-tx')}</td></tr>`;
       return;
     }
     tbody.innerHTML = data.recent_txs.map(tx => `
-      <tr>
-        <td>${tx.block}</td>
-        <td>${tx.type}</td>
-        <td>${tx.from.slice(0,10)}...</td>
-        <td>${tx.to.slice(0,10)}...</td>
-        <td style="color:var(--green)">${tx.amount_eth}</td>
-        <td>${tx.task_id.slice(0,8)}...</td>
-      </tr>
+      <tr><td>${tx.block}</td><td>${tx.type}</td><td>${tx.from.slice(0,10)}...</td><td>${tx.to.slice(0,10)}...</td><td style="color:var(--green)">${tx.amount_eth}</td><td>${tx.task_id.slice(0,8)}...</td></tr>
     `).join('');
-  } catch (e) {
-    console.error('Ledger fetch failed:', e);
-  }
+  } catch (e) { console.error('Ledger fetch failed:', e); }
 }
 
 async function checkHealth() {
@@ -260,17 +304,16 @@ async function checkHealth() {
       const port = {dispatcher:8001,collector:8002,analyst:8003,settlement:8004}[a];
       const res = await fetch(`http://localhost:${port}/health`);
       const el = document.getElementById('s-'+a);
-      if (res.ok) { el.className='badge ok'; el.textContent='● Online'; }
+      if (res.ok) { el.className='badge ok'; el.textContent=t('badge-online'); }
       else { el.className='badge'; el.textContent='● Error'; }
     } catch {
       const el = document.getElementById('s-'+a);
-      el.className='badge'; el.textContent='● Offline';
-      el.style.color='var(--red)';
+      el.className='badge'; el.textContent='● Offline'; el.style.color='var(--red)';
     }
   }
 }
 
-// Auto-refresh on load
+setLang(LANG);
 checkHealth();
 refreshLedger();
 </script>

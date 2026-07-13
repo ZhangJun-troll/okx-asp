@@ -48,3 +48,4 @@ class OrderRequest(BaseModel):
     tier: str               # free / basic / premium
     query: str              # user query, e.g. "BTC,ETH market analysis"
     tx_hash: Optional[str] = None
+    lang: str = "en"        # en / zh

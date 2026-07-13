@@ -78,22 +78,35 @@ def generate_brief(req: OrderRequest, analysis: dict) -> dict:
     top_bullish = [c for c in coins if c.get("label") == "bullish"][:3]
     top_bearish = [c for c in coins if c.get("label") == "bearish"][:3]
     index = analysis.get("sentiment_index", 0)
+    zh = getattr(req, 'lang', 'en') == 'zh'
+    alerts = analysis.get("risk_alerts", [])
 
     summary_parts = []
-    summary_parts.append(f"📊 Market Sentiment Index: {index:.2f} ({'Bullish' if index > 0.15 else 'Bearish' if index < -0.15 else 'Neutral'})")
-    if top_bullish:
-        coins_str = ", ".join(f"{c['coin']}({c['sentiment_score']:+.2f})" for c in top_bullish)
-        summary_parts.append(f"🟢 Bullish: {coins_str}")
-    if top_bearish:
-        coins_str = ", ".join(f"{c['coin']}({c['sentiment_score']:+.2f})" for c in top_bearish)
-        summary_parts.append(f"🔴 Bearish: {coins_str}")
-
-    alerts = analysis.get("risk_alerts", [])
-    if alerts:
-        summary_parts.append(f"⚠️ {len(alerts)} risk alert(s) detected")
-
-    if req.tier == "free":
-        summary_parts.append("⬆️ Upgrade to Basic/Premium for full risk report & fund flow analysis")
+    if zh:
+        label = '看涨' if index > 0.15 else ('看跌' if index < -0.15 else '中性')
+        summary_parts.append(f"📊 市场情绪指数: {index:.2f} ({label})")
+        if top_bullish:
+            coins_str = ", ".join(f"{c['coin']}({c['sentiment_score']:+.2f})" for c in top_bullish)
+            summary_parts.append(f"🟢 看涨: {coins_str}")
+        if top_bearish:
+            coins_str = ", ".join(f"{c['coin']}({c['sentiment_score']:+.2f})" for c in top_bearish)
+            summary_parts.append(f"🔴 看跌: {coins_str}")
+        if alerts:
+            summary_parts.append(f"⚠️ 检测到 {len(alerts)} 条风险预警")
+        if req.tier == "free":
+            summary_parts.append("⬆️ 升级至基础版/高级版获取完整风险报告与资金流向分析")
+    else:
+        summary_parts.append(f"📊 Market Sentiment Index: {index:.2f} ({'Bullish' if index > 0.15 else 'Bearish' if index < -0.15 else 'Neutral'})")
+        if top_bullish:
+            coins_str = ", ".join(f"{c['coin']}({c['sentiment_score']:+.2f})" for c in top_bullish)
+            summary_parts.append(f"🟢 Bullish: {coins_str}")
+        if top_bearish:
+            coins_str = ", ".join(f"{c['coin']}({c['sentiment_score']:+.2f})" for c in top_bearish)
+            summary_parts.append(f"🔴 Bearish: {coins_str}")
+        if alerts:
+            summary_parts.append(f"⚠️ {len(alerts)} risk alert(s) detected")
+        if req.tier == "free":
+            summary_parts.append("⬆️ Upgrade to Basic/Premium for full risk report & fund flow analysis")
 
     return {
         "type": req.tier,
