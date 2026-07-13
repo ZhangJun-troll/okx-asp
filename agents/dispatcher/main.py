@@ -83,18 +83,18 @@ def generate_brief(req: OrderRequest, analysis: dict) -> dict:
 
     summary_parts = []
     if zh:
-        label = '看涨' if index > 0.15 else ('看跌' if index < -0.15 else '中性')
-        summary_parts.append(f"📊 市场情绪指数: {index:.2f} ({label})")
+        label = '看漲' if index > 0.15 else ('看跌' if index < -0.15 else '中性')
+        summary_parts.append(f"📊 市場情緒指數: {index:.2f} ({label})")
         if top_bullish:
             coins_str = ", ".join(f"{c['coin']}({c['sentiment_score']:+.2f})" for c in top_bullish)
-            summary_parts.append(f"🟢 看涨: {coins_str}")
+            summary_parts.append(f"🟢 看漲: {coins_str}")
         if top_bearish:
             coins_str = ", ".join(f"{c['coin']}({c['sentiment_score']:+.2f})" for c in top_bearish)
             summary_parts.append(f"🔴 看跌: {coins_str}")
         if alerts:
-            summary_parts.append(f"⚠️ 检测到 {len(alerts)} 条风险预警")
+            summary_parts.append(f"⚠️ 偵測到 {len(alerts)} 條風險預警")
         if req.tier == "free":
-            summary_parts.append("⬆️ 升级至基础版/高级版获取完整风险报告与资金流向分析")
+            summary_parts.append("⬆️ 升級至基礎版/高級版取得完整風險報告與資金流向分析")
     else:
         summary_parts.append(f"📊 Market Sentiment Index: {index:.2f} ({'Bullish' if index > 0.15 else 'Bearish' if index < -0.15 else 'Neutral'})")
         if top_bullish:
