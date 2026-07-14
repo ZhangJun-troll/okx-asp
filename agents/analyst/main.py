@@ -50,6 +50,32 @@ def analyze_sentiment(texts: list[str], coin: str) -> SentimentResult:
         risk_flags=risk_flags[:5], source_count=len(coin_texts),
     )
 
+def generate_recommendations(results: list[SentimentResult]) -> list[dict]:
+    """Generate investment suggestions based on sentiment scores."""
+    recs = []
+    for r in results:
+        if r.sentiment_score > 0.25:
+            action = "📈 建议关注" if r.sentiment_score < 0.5 else "📈 强烈建议关注"
+            reason = f"{r.coin}情绪看涨({r.sentiment_score:+.2f})，市场共识积极"
+            recs.append({"coin": r.coin, "action": action, "reason": reason, "risk": "中"})
+        elif r.sentiment_score < -0.25:
+            action = "⚠️ 建议谨慎" if r.sentiment_score > -0.5 else "⚠️ 建议回避"
+            reason = f"{r.coin}情绪看跌({r.sentiment_score:+.2f})，市场恐慌情绪明显"
+            recs.append({"coin": r.coin, "action": action, "reason": reason, "risk": "高"})
+        else:
+            action = "🔍 建议观望"
+            reason = f"{r.coin}情绪中性({r.sentiment_score:+.2f})，暂无明确方向"
+            recs.append({"coin": r.coin, "action": action, "reason": reason, "risk": "低"})
+
+    # Flag coins with risk alerts
+    for rec in recs:
+        for r in results:
+            if r.coin == rec["coin"] and r.risk_flags:
+                rec["risk"] = "高"
+                rec["reason"] += f"（⚠️ 检测到{len(r.risk_flags)}条风险信号）"
+
+    return recs
+
 def detect_anomalies(data: dict) -> list[str]:
     alerts = []
     for tx in data.get("whale_transactions", []):
@@ -71,6 +97,7 @@ async def handle_task(msg: A2AMessage):
     results = [analyze_sentiment(texts, c) for c in coins]
     results.sort(key=lambda r: r.sentiment_score, reverse=True)
     risk_alerts = detect_anomalies(data)
+    recommendations = generate_recommendations(results)
     overall = sum(r.sentiment_score for r in results) / len(results) if results else 0
 
     return {
@@ -80,6 +107,7 @@ async def handle_task(msg: A2AMessage):
             "sentiment_index": round(overall, 3),
             "coin_sentiments": [r.model_dump() for r in results],
             "risk_alerts": risk_alerts,
+            "recommendations": recommendations,
             "analyzed_at": datetime.utcnow().isoformat(),
         },
         "bill": {

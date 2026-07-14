@@ -108,6 +108,18 @@ def generate_brief(req: OrderRequest, analysis: dict) -> dict:
         if req.tier == "free":
             summary_parts.append("⬆️ Upgrade to Basic/Premium for full risk report & fund flow analysis")
 
+    # Investment recommendations - only for user's requested coins
+    recs = analysis.get("recommendations", [])
+    query_coins = [c.strip().upper() for c in req.query.split(",")]
+    recs = [r for r in recs if r["coin"].upper() in query_coins]
+    if recs:
+        if zh:
+            summary_parts.append("\n💡 投資建議（僅供參考，不構成投資建議）:")
+        else:
+            summary_parts.append("\n💡 Investment Suggestions (not financial advice):")
+        for rec in recs:
+            summary_parts.append(f"  {rec['action']} {rec['coin']} — {rec['reason']}")
+
     return {
         "type": req.tier,
         "query": req.query,
@@ -116,6 +128,7 @@ def generate_brief(req: OrderRequest, analysis: dict) -> dict:
         "top_bullish": top_bullish,
         "top_bearish": top_bearish,
         "risk_alerts": alerts,
+        "recommendations": recs,
         "generated_at": datetime.utcnow().isoformat(),
     }
 
