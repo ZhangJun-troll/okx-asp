@@ -114,9 +114,10 @@ async def handle_task(msg: A2AMessage):
             "bill_id": str(uuid.uuid4()),
             "from_agent": "analyst",
             "to_agent": "settlement",
-            "amount_wei": 200_000_000_000_000,
+            "amount_wei": 150_000_000_000_000 + len(coins) * 10_000_000_000_000,
             "service_type": "data_analysis",
             "task_id": msg.task_id,
+            "price_breakdown": f"base=0.00015 + {len(coins)} coins x 0.00001",
         }
     }
 

@@ -53,6 +53,11 @@ async def collect_news() -> list[dict]:
 async def handle_task(msg: A2AMessage):
     if msg.task_type.value == "collect":
         news = await collect_news()
+        # Agent self-pricing: base + per-item surcharge
+        base_price = 80_000_000_000_000     # 0.00008 ETH base
+        per_item = 5_000_000_000_000         # 0.000005 ETH per news item
+        total_price = base_price + len(news) * per_item
+
         return {
             "status": "completed",
             "task_id": msg.task_id,
@@ -66,9 +71,10 @@ async def handle_task(msg: A2AMessage):
                 "bill_id": str(uuid.uuid4()),
                 "from_agent": "collector",
                 "to_agent": "settlement",
-                "amount_wei": 100_000_000_000_000,
+                "amount_wei": total_price,
                 "service_type": "data_collection",
                 "task_id": msg.task_id,
+                "price_breakdown": f"base={base_price/1e18:.6f} + {len(news)} items x {per_item/1e18:.9f}",
             }
         }
     return {"status": "unknown_task"}

@@ -148,6 +148,25 @@ select:focus,input:focus{border-color:var(--accent)}
       </div>
       <button class="btn outline" style="margin-top:12px" onclick="refreshLedger()" data-i18n="btn-ledger">Refresh Ledger</button>
     </div>
+
+    <!-- Agent Marketplace -->
+    <div class="card full-width">
+      <h2><span class="dot blue"></span><span data-i18n="h-marketplace">🏪 Agent Marketplace</span></h2>
+      <p style="font-size:12px;color:var(--dim);margin-bottom:12px" data-i18n="marketplace-desc">Third-party developers can register their agents and earn through A2A payments.</p>
+      <div id="marketplaceAgents"></div>
+      <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:16px">
+        <h3 style="font-size:13px;color:var(--accent);margin-bottom:12px" data-i18n="h-apply">📝 Register Your Agent</h3>
+        <div class="grid" style="gap:10px">
+          <div class="form-group"><label data-i18n="label-provider">Provider Name</label><input id="mp-name" placeholder="Your company/name"></div>
+          <div class="form-group"><label data-i18n="label-type">Agent Type</label><select id="mp-type"><option value="collector">Collector</option><option value="analyst">Analyst</option><option value="custom">Custom</option></select></div>
+          <div class="form-group"><label data-i18n="label-desc">Description</label><input id="mp-desc" placeholder="What does your agent do?"></div>
+          <div class="form-group"><label data-i18n="label-price">Price per Task (ETH)</label><input id="mp-price" type="number" step="0.0001" value="0.0001"></div>
+          <div class="form-group"><label data-i18n="label-deposit">Deposit (ETH, min 0.01)</label><input id="mp-deposit" type="number" step="0.01" value="0.01"></div>
+          <div class="form-group"><label data-i18n="label-contact">Contact</label><input id="mp-contact" placeholder="Email/Telegram"></div>
+        </div>
+        <button class="btn" onclick="submitApplication()" data-i18n="btn-apply">🚀 Submit Application</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -170,6 +189,10 @@ const T = {
     "h-alerts": "Risk Alerts", "no-alerts": "No alerts yet", "no-alerts-ok": "✅ No risk alerts detected",
     "h-brief": "📊 Market Brief (AI-Generated)", "brief-placeholder": "Waiting for order...",
     "h-ledger": "⛓️ A2A Settlement Ledger (X402)", "no-tx": "No transactions yet",
+    "h-marketplace": "🏪 Agent Marketplace", "marketplace-desc": "Third-party developers can register their agents and earn through A2A payments.",
+    "h-apply": "📝 Register Your Agent", "label-provider": "Provider Name", "label-type": "Agent Type",
+    "label-desc": "Description", "label-price": "Price per Task (ETH)", "label-deposit": "Deposit (ETH, min 0.01)",
+    "label-contact": "Contact", "btn-apply": "🚀 Submit Application",
     "th-block": "Block", "th-type": "Type", "th-from": "From", "th-to": "To",
     "th-amount": "Amount (ETH)", "th-task": "Task ID",
     "sentiment-index": "Market Sentiment Index", "processing": "Processing...",
@@ -188,6 +211,10 @@ const T = {
     "h-alerts": "風險預警", "no-alerts": "暫無預警", "no-alerts-ok": "✅ 未偵測到風險預警",
     "h-brief": "📊 市場簡報（AI生成）", "brief-placeholder": "等待訂單...",
     "h-ledger": "⛓️ A2A 結算帳本 (X402)", "no-tx": "暫無交易紀錄",
+    "h-marketplace": "🏪 Agent 市場", "marketplace-desc": "第三方開發者可註冊自己的Agent，透過A2A付款賺取收益。",
+    "h-apply": "📝 註冊你的Agent", "label-provider": "提供者名稱", "label-type": "Agent類型",
+    "label-desc": "描述", "label-price": "單次任務價格 (ETH)", "label-deposit": "押金 (ETH，最低0.01)",
+    "label-contact": "聯繫方式", "btn-apply": "🚀 提交申請",
     "th-block": "區塊", "th-type": "類型", "th-from": "發起方", "th-to": "接收方",
     "th-amount": "金額 (ETH)", "th-task": "任務ID",
     "sentiment-index": "市場情緒指數", "processing": "處理中...",
@@ -316,6 +343,42 @@ async function checkHealth() {
 setLang(LANG);
 checkHealth();
 refreshLedger();
+loadMarketplace();
+
+async function loadMarketplace() {
+  try {
+    const res = await fetch(API + '/marketplace');
+    const data = await res.json();
+    const container = document.getElementById('marketplaceAgents');
+    if (!data.agents.length) { container.innerHTML = '<p style="color:var(--dim)">No agents registered</p>'; return; }
+    container.innerHTML = '<table class="tx-table"><thead><tr><th>ID</th><th>Provider</th><th>Type</th><th>Description</th><th>Price (ETH)</th><th>Reputation</th><th>Status</th></tr></thead><tbody>' +
+      data.agents.map(a => `<tr>
+        <td>${a.id}</td><td>${a.provider}</td><td>${a.type}</td>
+        <td style="max-width:200px">${a.description}</td>
+        <td style="color:var(--accent)">${a.price_per_task}</td>
+        <td>${a.reputation}/100</td>
+        <td><span class="badge ${a.status==='active'?'ok':''}">${a.status}</span></td>
+      </tr>`).join('') + '</tbody></table>';
+  } catch(e) { console.error('Marketplace load failed:', e); }
+}
+
+async function submitApplication() {
+  const body = {
+    provider_name: document.getElementById('mp-name').value,
+    agent_type: document.getElementById('mp-type').value,
+    description: document.getElementById('mp-desc').value,
+    price_per_task: parseFloat(document.getElementById('mp-price').value),
+    deposit_amount: parseFloat(document.getElementById('mp-deposit').value),
+    contact: document.getElementById('mp-contact').value,
+  };
+  if (!body.provider_name || !body.description) { alert(LANG==='zh'?'请填写完整信息':'Please fill all fields'); return; }
+  try {
+    const res = await fetch(API + '/marketplace/apply', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    const data = await res.json();
+    alert(data.message || JSON.stringify(data));
+    loadMarketplace();
+  } catch(e) { alert('Error: ' + e.message); }
+}
 </script>
 </body>
 </html>

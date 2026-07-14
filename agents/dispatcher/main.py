@@ -147,3 +147,81 @@ async def proxy_ledger():
     async with httpx.AsyncClient(timeout=5) as client:
         r = await client.get("http://localhost:8004/ledger")
         return r.json()
+
+# --- Agent Marketplace ---
+from pydantic import BaseModel
+from typing import Optional
+
+class AgentApplication(BaseModel):
+    provider_name: str
+    agent_type: str          # collector / analyst / custom
+    description: str
+    price_per_task: float    # in ETH
+    contact: str
+    deposit_amount: float = 0.01  # ETH, minimum 0.01
+
+marketplace = {
+    "agents": [
+        {
+            "id": "builtin-collector",
+            "provider": "OKX-ASP Official",
+            "type": "collector",
+            "description": "Crypto news crawler: CoinDesk, CoinTelegraph, Decrypt RSS feeds",
+            "price_per_task": 0.000165,
+            "reputation": 100,
+            "status": "active",
+            "deposit": "N/A (built-in)",
+        },
+        {
+            "id": "builtin-analyst",
+            "provider": "OKX-ASP Official",
+            "type": "analyst",
+            "description": "Sentiment scoring + risk detection + investment recommendations",
+            "price_per_task": 0.00025,
+            "reputation": 100,
+            "status": "active",
+            "deposit": "N/A (built-in)",
+        },
+    ],
+    "applications": [],
+}
+
+@app.get("/marketplace")
+async def get_marketplace():
+    """List all registered agents and pending applications."""
+    return marketplace
+
+@app.post("/marketplace/apply")
+async def apply_as_agent(app: AgentApplication):
+    """Third-party agent provider submits application with deposit."""
+    if app.deposit_amount < 0.01:
+        return {"error": "Minimum deposit is 0.01 ETH"}
+    agent_id = f"ext-{app.provider_name.lower().replace(' ', '-')}-{len(marketplace['applications'])}"
+    entry = {
+        "id": agent_id,
+        "provider": app.provider_name,
+        "type": app.agent_type,
+        "description": app.description,
+        "price_per_task": app.price_per_task,
+        "reputation": 50,  # new agents start at 50
+        "status": "pending_review",
+        "deposit": f"{app.deposit_amount} ETH",
+        "contact": app.contact,
+    }
+    marketplace["applications"].append(entry)
+    return {"status": "application_submitted", "agent_id": agent_id, "message": "Platform will review within 24h"}
+
+@app.post("/marketplace/approve/{agent_id}")
+async def approve_agent(agent_id: str):
+    """Platform owner approves an agent application."""
+    for app in marketplace["applications"]:
+        if app["id"] == agent_id:
+            app["status"] = "active"
+            marketplace["agents"].append(app)
+            return {"status": "approved", "agent": app}
+    return {"error": "agent not found"}
+
+@app.get("/marketplace/agents")
+async def list_active_agents():
+    """List all active agents available for task assignment."""
+    return {"agents": [a for a in marketplace["agents"] if a["status"] == "active"]}
