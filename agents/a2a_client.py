@@ -8,6 +8,7 @@ AGENTS = {
     "collector":  "http://localhost:8002",
     "analyst":    "http://localhost:8003",
     "settlement": "http://localhost:8004",
+    "summarizer": "http://localhost:8005",
 }
 
 async def send_task(to_agent: str, task_type: TaskType, payload: dict, from_agent: str = "dispatcher") -> dict:

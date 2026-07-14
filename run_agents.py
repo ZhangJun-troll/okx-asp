@@ -12,6 +12,7 @@ if __name__ == "__main__":
         ("collector.main",  8002),
         ("analyst.main",    8003),
         ("settlement.main", 8004),
+        ("summarizer.main", 8005),
     ]
     procs = []
     for module, port in agents:

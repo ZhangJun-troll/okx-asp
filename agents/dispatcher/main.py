@@ -35,7 +35,19 @@ async def create_order(req: OrderRequest):
         "started_at": datetime.utcnow().isoformat(),
     }
 
-    # Step 1: Dispatch to Collector
+    # Step 1: Route based on query content
+    query_lower = req.query.lower()
+    agents_to_call = []
+
+    # ponytail: simple keyword routing, add ML classification later
+    if any(kw in query_lower for kw in ["defi", "yield", "收益"]):
+        agents_to_call.append("defi-yield")  # third-party, not implemented yet
+    elif any(kw in query_lower for kw in ["nft", "opensea"]):
+        agents_to_call.append("nft-sentiment")  # third-party, not implemented yet
+    else:
+        agents_to_call = ["collector", "analyst"]  # default: sentiment analysis
+
+    # Step 2: Dispatch to Collector
     collector_result = await a2a_client.send_task(
         to_agent="collector",
         task_type=TaskType.COLLECT,
@@ -43,7 +55,7 @@ async def create_order(req: OrderRequest):
         from_agent="dispatcher",
     )
 
-    # Step 2: Forward collected data to Analyst
+    # Step 3: Forward collected data to Analyst
     analyst_result = await a2a_client.send_task(
         to_agent="analyst",
         task_type=TaskType.ANALYZE,
@@ -51,12 +63,21 @@ async def create_order(req: OrderRequest):
         from_agent="dispatcher",
     )
 
-    # Step 3: Submit A2A bills to Settlement
-    for bill in [collector_result.get("bill"), analyst_result.get("bill")]:
+    # Step 4: Summarizer aggregates final report
+    analysis = analyst_result.get("data", {})
+    summarizer_result = await a2a_client.send_task(
+        to_agent="summarizer",
+        task_type=TaskType.ANALYZE,
+        payload=analysis,
+        from_agent="dispatcher",
+    )
+
+    # Step 5: Submit all A2A bills to Settlement
+    for bill in [collector_result.get("bill"), analyst_result.get("bill"), summarizer_result.get("bill")]:
         if bill:
             await a2a_client.send_bill(bill)
 
-    # Step 4: Generate market brief
+    # Step 6: Generate market brief
     analysis = analyst_result.get("data", {})
     brief = generate_brief(req, analysis)
 
