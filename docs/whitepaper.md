@@ -10,7 +10,9 @@
 
 The cryptocurrency market generates over 500 million data points daily across social media platforms, news outlets, on-chain transactions, and community forums. Individual traders face an impossible information asymmetry: institutional players deploy expensive data infrastructure while retail participants rely on fragmented, often misleading signals from social media influencers and lagging indicators.
 
-OKX-ASP (Agentic Service Provider) solves this by deploying a network of four specialized AI agents that autonomously collect, analyze, and deliver crypto market intelligence. What makes OKX-ASP fundamentally different from existing analytics platforms is its architecture: instead of a monolithic application, we built an autonomous agent economy where each agent operates as an independent service provider, charges for its work through on-chain micropayments, and settles accounts transparently on X-Layer — OKX's zero-knowledge Layer 2 network.
+OKX-ASP (Agentic Service Provider) solves this by deploying a network of four specialized AI agents that autonomously collect, analyze, and deliver crypto market intelligence. What makes OKX-ASP fundamentally different from existing analytics platforms is its architecture: instead of a monolithic application, we built an **open agent marketplace** where each agent operates as an independent service provider, charges for its work through on-chain micropayments, and settles accounts transparently on X-Layer — OKX's zero-knowledge Layer 2 network.
+
+**The key innovation is openness.** Today, our four built-in agents form a self-contained economy. But the platform is designed as a **marketplace that any third-party developer can join**. Anyone can deploy a specialized agent — DeFi yield analysis, NFT sentiment tracking, regulatory monitoring, whale wallet tracking — and plug it into the OKX-ASP network. When a user places an order, the dispatcher routes tasks not just to built-in agents, but to whichever third-party agents offer the best service at the best price. Payment flows automatically through the X402 protocol, settled on-chain with no trust required between parties. This transforms OKX-ASP from a single product into a **platform** — an open marketplace of AI intelligence services where competition drives quality and innovation.
 
 The system is not a demo or prototype. It processes real data from live RSS feeds, performs actual sentiment analysis, and executes A2A (Agent-to-Agent) payments through a simulated X402 protocol that mirrors the on-chain settlement logic defined in our Solidity smart contracts. Every transaction between agents is recorded on an immutable ledger, creating a fully auditable service economy.
 
@@ -208,13 +210,24 @@ All functions are protected by ReentrancyGuard and follow OpenZeppelin security 
 
 ---
 
-## 9. Future Roadmap
+## 9. Future Roadmap: The Open Agent Marketplace
 
 **Q3 2026**: Integrate OKX DEX API for real-time whale transaction monitoring, replacing mock data with live on-chain feeds.
 
 **Q4 2026**: Add natural language processing with fine-tuned LLMs for more nuanced sentiment analysis beyond keyword matching.
 
-**Q1 2027**: Launch agent marketplace where third-party developers can deploy specialized analysis agents (DeFi yield analysis, NFT sentiment, regulatory tracking) and earn through the A2A payment network.
+**Q1 2027 — Agent Marketplace Launch**: This is the core long-term vision. Third-party developers will be able to:
+- Deploy their own specialized analysis agents (DeFi yield analysis, NFT sentiment, regulatory tracking, cross-chain arbitrage detection)
+- Register them on the OKX-ASP network via the `registerAgent()` smart contract function
+- Set their own pricing per task
+- Receive automatic payments from users through the X402 protocol
+
+The dispatcher will act as a **routing engine**, selecting the best combination of agents for each user request based on price, quality, and specialization. This creates a competitive marketplace where:
+- Users get better analysis from specialized agents competing on quality
+- Developers earn revenue by building niche expertise
+- The platform takes a small fee (2%) on every transaction
+
+This is not just an add-on feature — it's the fundamental reason for the A2A payment architecture. The X402 settlement protocol exists precisely because third-party agents cannot rely on trust alone. On-chain payments provide the trust layer that makes an open marketplace possible.
 
 **Q2 2027**: Cross-chain expansion to support multi-chain sentiment analysis across Ethereum, Solana, and BNB Chain.
 

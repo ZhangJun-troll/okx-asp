@@ -2,6 +2,12 @@
 
 Multi-Agent crypto sentiment intelligence platform built for **OKX-AI-Genesis Hackathon**.
 
+## 🚀 Core Innovation: Open Agent Marketplace
+
+OKX-ASP is not just a sentiment tool — it's an **open marketplace for AI agents**. Today it runs 4 built-in agents. Tomorrow, **any developer can deploy their own agent** (DeFi yield analysis, NFT sentiment, regulatory tracking, etc.) and plug it into the network. When users place orders, the dispatcher routes tasks to the best available agents. Payments flow automatically through X402 micropayments on X-Layer — no trust required between parties.
+
+This is why agents pay each other: the A2A settlement protocol exists to support an open marketplace where strangers can collaborate and get paid fairly.
+
 ## Architecture
 
 ```
